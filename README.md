@@ -1,4 +1,4 @@
-#  CYBERTWEAK
+# ■ CYBERTWEAK
 
 > simply tweakzz_
 
@@ -9,14 +9,14 @@ A modern Windows tweaker and optimizer with a clean cyber-style GUI. Pick what y
 Open **PowerShell** (as administrator is best) and run:
 
 ```powershell
-irm https://raw.githubusercontent.com/BrainDeadVibeC0der/Cybertweaker/main/win.ps1 | iex
+irm https://raw.githubusercontent.com/cybertweakz/CyberTweak/main/win.ps1 | iex
 ```
 
 This downloads the latest version to `%LOCALAPPDATA%\CyberTweak` and starts it. Your settings are kept between updates.
 
 **Other ways to run it**
 
-- **EXE:** download `CyberTweak.exe` from [Releases](https://github.com/BrainDeadVibeC0der/Cybertweaker/releases) and double-click it. It is a single file and needs nothing else.
+- **EXE:** download `CyberTweak.exe` from [Releases](https://github.com/cybertweakz/CyberTweak/releases) and double-click it. It is a single file and needs nothing else.
 - **ZIP:** download the repo and run `Start.bat`.
 
 ## Features
@@ -43,6 +43,10 @@ This downloads the latest version to `%LOCALAPPDATA%\CyberTweak` and starts it. 
 
 - Tweaks marked **SAFE** are low-risk. **MEDIUM** and **EXPERT** tweaks explain their trade-offs, so read them before applying.
 - Cleanup actions delete files and cannot be undone.
+- Start with `-DryRun` to only see what would run, without changing anything:
+  ```powershell
+  powershell -ExecutionPolicy Bypass -File CyberTweak.ps1 -DryRun
+  ```
 
 ## Credits
 
