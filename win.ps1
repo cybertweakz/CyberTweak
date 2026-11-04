@@ -11,13 +11,17 @@ $base = Join-Path $env:LOCALAPPDATA 'CyberTweak'
 $exe  = Join-Path $base 'CyberTweak.exe'
 New-Item -ItemType Directory -Force $base | Out-Null
 
-Write-Host '[CyberTweak] Downloading latest release...' -ForegroundColor Cyan
+Write-Host '[CyberTweak] Downloading...' -ForegroundColor Cyan
 [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
-try {
-    Invoke-WebRequest "https://github.com/$Repo/releases/latest/download/CyberTweak.exe" -OutFile $exe -UseBasicParsing
-} catch {
-    Write-Host "[CyberTweak] Download failed: no CyberTweak.exe in the latest release of $Repo." -ForegroundColor Red
-    Write-Host "             $($_.Exception.Message)" -ForegroundColor DarkGray
+# 1. the exe attached to the latest release, 2. the exe stored in the repo (main branch)
+$sources = "https://github.com/$Repo/releases/latest/download/CyberTweak.exe",
+           "https://github.com/$Repo/raw/main/CyberTweak.exe"
+$ok = $false
+foreach ($url in $sources) {
+    try { Invoke-WebRequest $url -OutFile $exe -UseBasicParsing; $ok = $true; break } catch {}
+}
+if (-not $ok) {
+    Write-Host "[CyberTweak] Download failed: no CyberTweak.exe found in the releases or the main branch of $Repo." -ForegroundColor Red
     return
 }
 Unblock-File $exe
