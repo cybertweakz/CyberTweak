@@ -1,37 +1,26 @@
 # CyberTweak web launcher
 #   irm https://raw.githubusercontent.com/cybertweakz/CyberTweak/main/win.ps1 | iex
-# Downloads the latest CyberTweak from GitHub into %LOCALAPPDATA%\CyberTweak\app
-# (keeps your settings and history) and starts it as administrator.
+# Downloads CyberTweak.exe from the latest GitHub release and starts it.
+# The exe contains everything (scripts, languages, fonts, logos) and asks for admin itself.
+# Your settings in %LOCALAPPDATA%\CyberTweak\app are kept between updates.
 
-$Repo   = 'cybertweakz/CyberTweak'
-$Branch = 'main'
+$Repo = 'cybertweakz/CyberTweak'
 
 $ErrorActionPreference = 'Stop'
-$base    = Join-Path $env:LOCALAPPDATA 'CyberTweak'
-$app     = Join-Path $base 'app'
-$zip     = Join-Path $env:TEMP 'CyberTweak_download.zip'
-$extract = Join-Path $env:TEMP 'CyberTweak_extract'
-
-Write-Host '[CyberTweak] Downloading...' -ForegroundColor Cyan
-[Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
-Invoke-WebRequest "https://github.com/$Repo/archive/refs/heads/$Branch.zip" -OutFile $zip -UseBasicParsing
-
-if (Test-Path $extract) { Remove-Item $extract -Recurse -Force }
-Expand-Archive $zip $extract -Force
-$src = Get-ChildItem $extract -Directory | Select-Object -First 1
-
-# keep the user's own files between updates
-$keep = @{}
-foreach ($f in 'settings.json', 'history.json') {
-    $p = Join-Path $app $f
-    if (Test-Path $p) { $keep[$f] = [IO.File]::ReadAllBytes($p) }
-}
-if (Test-Path $app) { Remove-Item $app -Recurse -Force }
+$base = Join-Path $env:LOCALAPPDATA 'CyberTweak'
+$exe  = Join-Path $base 'CyberTweak.exe'
 New-Item -ItemType Directory -Force $base | Out-Null
-Move-Item $src.FullName $app
-foreach ($f in $keep.Keys) { [IO.File]::WriteAllBytes((Join-Path $app $f), $keep[$f]) }
-Get-ChildItem $app -Recurse -File | Unblock-File
-Remove-Item $zip, $extract -Recurse -Force -ErrorAction SilentlyContinue
+
+Write-Host '[CyberTweak] Downloading latest release...' -ForegroundColor Cyan
+[Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
+try {
+    Invoke-WebRequest "https://github.com/$Repo/releases/latest/download/CyberTweak.exe" -OutFile $exe -UseBasicParsing
+} catch {
+    Write-Host "[CyberTweak] Download failed: no CyberTweak.exe in the latest release of $Repo." -ForegroundColor Red
+    Write-Host "             $($_.Exception.Message)" -ForegroundColor DarkGray
+    return
+}
+Unblock-File $exe
 
 Write-Host '[CyberTweak] Starting (confirm the admin prompt)...' -ForegroundColor Cyan
-Start-Process powershell.exe -Verb RunAs -ArgumentList @('-NoProfile', '-ExecutionPolicy', 'Bypass', '-WindowStyle', 'Hidden', '-File', "`"$app\CyberTweak.ps1`"")
+Start-Process $exe

@@ -12,7 +12,7 @@ Open **PowerShell** (as administrator is best) and run:
 irm https://raw.githubusercontent.com/cybertweakz/CyberTweak/main/win.ps1 | iex
 ```
 
-This downloads the latest version to `%LOCALAPPDATA%\CyberTweak` and starts it. Your settings are kept between updates.
+This downloads `CyberTweak.exe` from the latest release to `%LOCALAPPDATA%\CyberTweak` and starts it. Your settings are kept between updates.
 
 **Other ways to run it**
 
